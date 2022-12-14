@@ -12,33 +12,25 @@ public class JpaMain {
         tx.begin();
         try {
 
-            Member member = new Member();
-            member.setUsername("member1");
-            member.setAge(10);
-            em.persist(member);
+            for (int i = 0; i < 100; i++) {
+                Member member = new Member();
+                member.setUsername("member" + i);
+                member.setAge(i);
+                em.persist(member);
+            }
 
             em.flush();
             em.clear();
 
-            List<Member> result = em.createQuery("select m from Member m", Member.class)
-                    .getResultList();
-            Member findMember = result.get(0);
-            findMember.setAge(20);  // update query가 나갔으므로 영속성 컨텍스트에서 관리중이라는 것을 알 수 있음.
-
-            List<Team> result2 = em.createQuery("select m.team from Member m", Team.class)
-                    .getResultList();  // join 쿼리가 나감. join은 성능에 영향을 주기 때문에 SQL과 유사하도록 아래와 같이 하는게 좋음.
-            List<Team> result3 = em.createQuery("select t from Member m join m.team t", Team.class)
+            List<Member> result = em.createQuery("select m from Member m order by m.age desc", Member.class)
+                    .setFirstResult(1)
+                    .setMaxResults(10)
                     .getResultList();
 
-            /**
-             * 프로젝션 - 여러 값 조회
-             */
-            // 가장 깔끔한 방법. 패키지명이 길어지면 별로라는 단점. QueryDSL에서 해결됨.
-            List<MemberDto> resultList = em.createQuery("select new hellojpa.jpql.MemberDto(m.username, m.age) from Member m", MemberDto.class)
-                    .getResultList();
-            MemberDto memberDto = resultList.get(0);
-            System.out.println("memberDto.getUsername() = " + memberDto.getUsername());
-            System.out.println("memberDto.getAge() = " + memberDto.getAge());
+            System.out.println("result.size() = " + result.size());
+            for (Member member1 : result) {
+                System.out.println("member1 = " + member1);
+            }
 
             tx.commit();
         } catch (Exception e) {
