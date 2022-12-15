@@ -40,33 +40,13 @@ public class JpaMain {
             em.clear();
 
 
-            String query = "select m from Member m";
-            List<Member> result = em.createQuery(query, Member.class)
-                    .getResultList();
-            for (Member member : result) {
-                System.out.println("result = " + member.getUsername() + ", " + member.getTeam().getName());
-                /* [N + 1 문제]
-                * 회원1이 돌죠. 그때 팀A를 SQL 쿼리로 갖고 옴. 왜? 영속성 컨텍스트에 없기 때문에.
-                * 회원2도 팀A 소속이었죠. 현재 1차 캐시에 팀A가 있기 때문에 SQL이 아닌 1차 캐시에서 갖고 옴.
-                * 그래서 팀A에 대한 select 쿼리가 1번만 나간거고 회원2를 조회할 때는 select 쿼리가 나가지 않았음.
-                * 동일함. 1차 캐시에 팀B가 없기 때문에 회원3을 조회하는 시점에 SQL 쿼리를 날림.
-                *
-                * fetch join을 사용하지 않아서 회원 100명의 팀을 조회할 때 쿼리가 100방이 나가는 참사가 생김
-                * => N(100명에 대한) + 1(회원 갖고 오는 쿼리) => 첫번째 쿼리로 얻은 결과(1)만큼 N(100)번 날리는 것 => N + 1 문제 */
-            }
-
-            em.clear();
-            System.out.println("=====================================================================");
-
-            String query2 = "select m from Member m join fetch m.team";
-            List<Member> result2 = em.createQuery(query2, Member.class)
-                    .getResultList();
-            for (Member member : result2) {
-                System.out.println("result2 = " + member.getUsername() + ", " + member.getTeam().getName());
-                /* 이때 member.getTeam()의 팀은 프록시가 아님
-                * -> fetch join으로 회원과 팀을 함꼐 조회해서 지연 로딩X
-                * result2에 결과가 담기는 시점에 프록시가 아닌 실제 데이터가 담기게 됨. */
-            }
+            // 객체를 넘겨도 쿼리는 PK 값이 전달
+            String query = "select m from Member m where m = :member";
+            Member findMember = em.createQuery(query, Member.class)
+                    .setParameter("member", member1)
+                    .getSingleResult();
+            System.out.println("findMember = " + findMember);
+            System.out.println("findMember.getUsername() = " + findMember.getUsername());
 
 
             tx.commit();
