@@ -9,8 +9,8 @@
             <property name="javax.persistence.jdbc.user" value="gustjd"/>
             <property name="javax.persistence.jdbc.password" value="gustjd"/>
             <property name="javax.persistence.jdbc.url" value="jdbc:mariadb://localhost:3306/test"/>
-<!--            <property name="hibernate.dialect" value="org.hibernate.dialect.MariaDB103Dialect"/>-->
-            <property name="hibernate.dialect" value="hellojpa.dialect.MyMariaDBDialect"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MariaDB103Dialect"/>
+<!--            <property name="hibernate.dialect" value="hellojpa.dialect.MyMariaDBDialect"/>-->
 
             <!-- 옵션 -->
             <property name="hibernate.show_sql" value="true"/>
