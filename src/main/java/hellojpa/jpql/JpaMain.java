@@ -16,37 +16,36 @@ public class JpaMain {
             team.setName("teamA");
             em.persist(team);
 
-            Member member = new Member();
-            member.setUsername("관리자");
-            member.setAge(10);
-            member.setType(MemberType.ADMIN);
-            member.setTeam(team);
-            em.persist(member);
+            Member member1 = new Member();
+            member1.setUsername("관리자1");
+            member1.setAge(10);
+            member1.setType(MemberType.ADMIN);
+            member1.setTeam(team);
+            em.persist(member1);
+
+            Member member2 = new Member();
+            member2.setUsername("관리자2");
+            em.persist(member2);
 
             em.flush();
             em.clear();
 
 
-            String query1 = "select " +
-                    "case when m.age <= 10 then '학생 요금' " +
-                    "when m.age >= 60 then '경로 요금' " +
-                    "else '일반 요금' " +
-                    "end " +
-                    "from Member m";
-            List<String> result1 = em.createQuery(query1, String.class)
+            String query = "select concat('a', 'b') from Member m";
+            List<String> result = em.createQuery(query, String.class)
                     .getResultList();
-            for (String s : result1) {
+            for (String s : result) {
                 System.out.println("s = " + s);
             }
 
-            String query2 = "select coalesce(m.username, '이름 없는 회원') from Member m";
-            List<String> result2 = em.createQuery(query2, String.class)
+            String query2 = "select locate('ce', 'abcdef') from Member m";
+            List<Integer> result2 = em.createQuery(query2, Integer.class)
                     .getResultList();
-            for (String s : result2) {
-                System.out.println("s = " + s);
+            for (Integer i : result2) {
+                System.out.println("i = " + i);
             }
 
-            String query3 = "select nullif(m.username, '관리자') from Member m";
+            String query3 = "select function('group_concat', m.username) from Member m";
             List<String> result3 = em.createQuery(query3, String.class)
                     .getResultList();
             for (String s : result3) {
