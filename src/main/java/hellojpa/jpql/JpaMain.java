@@ -36,16 +36,18 @@ public class JpaMain {
             member3.setTeam(teamB);
             em.persist(member3);
 
-            em.flush();
+
+            // 이 시점에 flush
+            int resultCount = em.createQuery("update Member m set m.age = 20")
+                    .executeUpdate();
+            System.out.println("resultCount = " + resultCount);
+
+            // 아래와 같은 이유로 벌크 연산 후에는 영속성 컨텍스트 초기화
             em.clear();
 
-
-            List<Member> result = em.createNamedQuery("Member.findByUsername", Member.class)
-                    .setParameter("username", "회원1")
-                    .getResultList();
-            for (Member member : result) {
-                System.out.println("member = " + member);
-            }
+            // update 쿼리는 DB에 곧바로 반영이 됐지만 1차 캐시에는 아직 세팅이 안 되어있음.
+            Member findMember = em.find(Member.class, member1.getId());
+            System.out.println("findMember.getAge() = " + findMember.getAge());
 
 
             tx.commit();
