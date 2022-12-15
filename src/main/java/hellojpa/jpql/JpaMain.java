@@ -40,13 +40,12 @@ public class JpaMain {
             em.clear();
 
 
-            // 객체를 넘겨도 쿼리는 PK 값이 전달
-            String query = "select m from Member m where m = :member";
-            Member findMember = em.createQuery(query, Member.class)
-                    .setParameter("member", member1)
-                    .getSingleResult();
-            System.out.println("findMember = " + findMember);
-            System.out.println("findMember.getUsername() = " + findMember.getUsername());
+            List<Member> result = em.createNamedQuery("Member.findByUsername", Member.class)
+                    .setParameter("username", "회원1")
+                    .getResultList();
+            for (Member member : result) {
+                System.out.println("member = " + member);
+            }
 
 
             tx.commit();
